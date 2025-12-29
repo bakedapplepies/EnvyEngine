@@ -1,0 +1,25 @@
+include(ExternalProject)
+
+if (UNIX)
+    set(LIB lib64)
+elseif (WIN32)
+    set(LIB lib)
+endif ()
+
+set(GLFW_INSTALL_DIR ${CMAKE_CURRENT_BINARY_DIR}/extern/glfw CACHE INTERNAL "")
+ExternalProject_Add(
+    GLFW_EXTERN
+    PREFIX ${GLFW_INSTALL_DIR}
+    GIT_REPOSITORY https://github.com/glfw/glfw.git
+    GIT_TAG dbadda26835ec5089ef922e6c290bcf58cf12056
+    UPDATE_DISCONNECTED FALSE
+    CMAKE_ARGS
+        -DCMAKE_INSTALL_PREFIX:PATH=${GLFW_INSTALL_DIR}/install
+        -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
+        -DGLFW_BUILD_EXAMPLES:BOOL=FALSE
+        -DGLFW_BUILD_TESTS:BOOL=FALSE
+)
+add_library(GLFW_LIBRARY STATIC IMPORTED)
+# target_compile_options(GLFW_LIBRARY INTERFACE -pg)
+# target_link_options(GLFW_LIBRARY INTERFACE -pg)
+set_target_properties(GLFW_LIBRARY PROPERTIES IMPORTED_LOCATION ${GLFW_INSTALL_DIR}/install/${LIB}/${CMAKE_STATIC_LIBRARY_PREFIX}glfw${CMAKE_STATIC_LIBRARY_SUFFIX})

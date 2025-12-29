@@ -1,0 +1,18 @@
+#version 460 core
+
+layout (local_size_x = 8, local_size_y = 8) in;
+
+layout (rgba32f, binding = 0) writeonly uniform image2D u_imageOutput;
+
+layout (location = 0) uniform float u_time;
+
+void main()
+{
+    // vec4 outPixel = vec4(sin(u_time)*0.5 + 0.5, 1.0, 0.0, 1.0);
+    // vec4 outPixel = vec4(0.0, gl_LocalInvocationIndex/(1920*1080), 0.0, 0.0);
+    vec4 outPixel = vec4(gl_GlobalInvocationID.xy/vec2(1920, 1080), 0.0, 0.0);
+
+    ivec2 pixelCoords = ivec2(gl_GlobalInvocationID.xy);
+
+    imageStore(u_imageOutput, pixelCoords, outPixel);
+}
