@@ -1,5 +1,9 @@
 #include "Envy/opengl/ResourceManager.h"
 
+#if _WIN32
+#   include <windows.h>
+#endif
+
 #include <sstream>
 #include <fstream>
 #include <cassert>
@@ -103,7 +107,7 @@ uint8_t* ResourceManager::ReadImage(std::string_view file_path, int* width, int*
 #ifndef _WIN32
     FILE* f = fopen(file_path.data(), "rb");
 #else
-    std::string s(file.GetPath());
+    std::string s(file_path);
     std::wstring filePathW;
     filePathW.resize(s.length());
     int newSize = MultiByteToWideChar(CP_UTF8, 0, s.c_str(), s.size(), const_cast<wchar_t *>(filePathW.c_str()), filePathW.length());

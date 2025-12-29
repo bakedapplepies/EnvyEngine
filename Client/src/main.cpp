@@ -6,8 +6,8 @@ int main()
     // Object creation
     WindowConfig windowConfig {
         .name = "EnvyClient",
-        .width = 1280,
-        .height = 720
+        .width = 1920,
+        .height = 1080
     };
     Application window;
     Envy::EnvyInstance envyInstance;

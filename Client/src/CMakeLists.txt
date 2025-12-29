@@ -15,6 +15,7 @@ add_dependencies(${PROJECT_NAME}
 
 target_include_directories(${PROJECT_NAME} PRIVATE
     ${PROJECT_SOURCE_DIR}/include
+    ${GLFW_INSTALL_DIR}/install/include
     ${ENVY_PUBLIC_INCLUDES}
 )
 

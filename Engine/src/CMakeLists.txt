@@ -49,8 +49,9 @@ target_link_libraries(L${PROJECT_NAME}Deps INTERFACE
     $<IF:$<CONFIG:Debug>, fmtd, fmt>
     STB_IMAGE_WRITE
     STB_IMAGE_LOAD
-    GL
     glm
+    $<IF:$<PLATFORM_ID:Windows>, opengl32 gdi32 user32 kernel32 shell32,
+                                 GL>
 )
 
 target_link_libraries(L${PROJECT_NAME} PRIVATE L${PROJECT_NAME}Deps)

@@ -1,7 +1,6 @@
 #pragma once
 
 #include <glad/glad.h>
-#include <GLFW/glfw3.h>
 
 #include "Envy/core/Defines.h"
 #include "Envy/opengl/ShaderProgram.h"
