@@ -39,8 +39,10 @@ target_include_directories(L${PROJECT_NAME} PRIVATE
 )
 
 target_link_directories(L${PROJECT_NAME}Deps INTERFACE
-    ${FMT_INSTALL_DIR}/install/lib64
-    ${GLM_INSTALL_DIR}/install/lib64
+    $<IF:$<PLATFORM_ID:Windows>, ${FMT_INSTALL_DIR}/install/lib,
+                                 ${FMT_INSTALL_DIR}/install/lib64>
+    $<IF:$<PLATFORM_ID:Windows>, ${GLM_INSTALL_DIR}/install/lib,
+                                 ${GLM_INSTALL_DIR}/install/lib64>
 )
 
 target_link_libraries(L${PROJECT_NAME}Deps INTERFACE

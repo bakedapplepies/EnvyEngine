@@ -19,7 +19,8 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 )
 
 target_link_directories(${PROJECT_NAME} PRIVATE
-    ${GLFW_INSTALL_DIR}/install/lib64
+    $<IF:$<PLATFORM_ID:Windows>, ${GLFW_INSTALL_DIR}/install/lib,
+                                 ${GLFW_INSTALL_DIR}/install/lib64>
     ${CMAKE_BINARY_DIR}/vendor
 )
 
