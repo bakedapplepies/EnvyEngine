@@ -11,6 +11,7 @@
 #include <stb/stb_image.h>
 
 #include "Envy/core/Assert.h"
+#include "Envy/core/Logging.h"
 
 ENVY_NAMESPACE_START
 
@@ -26,17 +27,26 @@ ResourceManager::~ResourceManager()
 
 void ResourceManager::LoadShaderProgram(ShaderType shader_type, std::string_view file_path)
 {
+    if (m_shaderPrograms.find(file_path.data()) != m_shaderPrograms.end())
+    {
+        ENVY_WARN("Shader program \"{}\" is already loaded.", file_path.data());
+        return;
+    }
     std::string shaderSource = ReadFile(file_path);
     m_shaderPrograms[file_path.data()] = ShaderProgram(shader_type, shaderSource);
 }
 
 void ResourceManager::LoadTexture2D(TextureFormat texture_format, std::string_view file_path)
 {
-    // Note 1: Loading a new texture with the same path is not possible,
-    // though that's unlikely
-    // Note 2: Cannot delete a texture yet as deleted textures will leave
+    // Note: Cannot delete a texture yet as deleted textures will leave
     // empty spaces in the vector (which can be fixed)
 
+    if (m_texture2DIndices.find(file_path.data()) != m_texture2DIndices.end())
+    {
+        ENVY_WARN("Texture2D \"{}\" is already loaded.", file_path.data());
+        return;
+    }
+    
     int width, height, channels;  // TODO: channels is not used
     stbi_uc* imageData = ReadImage(file_path, &width, &height, &channels);
 
@@ -87,6 +97,33 @@ Pipeline* ResourceManager::CreatePipeline()
     return &m_pipelines.back();
 }
 
+const UniformBuffer* ResourceManager::CreateUBO(uint32_t ubo_block_size, uint32_t binding)
+{
+    m_UBOs.emplace_back(UniformBuffer(ubo_block_size, binding));
+
+    return &m_UBOs.back();
+}
+
+const Cubemap* ResourceManager::CreateCubemap(TextureFormat format,
+                                              const std::array<std::string_view, 6>& texture2D_paths)
+{
+    std::array<uint8_t*, 6> data;
+    int width, height, channels;
+    for (uint32_t i = 0; i < 6; i++)
+    {
+        data[i] = ReadImage(texture2D_paths[i], &width, &height, &channels, false);
+    }
+
+    m_cubemaps.emplace_back(Cubemap(width, height, format, data));
+
+    for (uint32_t i = 0; i < 6; i++)
+    {
+        stbi_image_free(data[i]);
+    }
+
+    return &m_cubemaps.back();
+}
+
 std::string ResourceManager::ReadFile(std::string_view file_path)
 {
     std::ifstream infile(file_path.data());
@@ -102,7 +139,9 @@ std::string ResourceManager::ReadFile(std::string_view file_path)
     return ss.str();
 }
 
-uint8_t* ResourceManager::ReadImage(std::string_view file_path, int* width, int* height, int* channels)
+uint8_t* ResourceManager::ReadImage(std::string_view file_path,
+                                    int* width, int* height, int* channels,
+                                    bool flip)
 {
 #ifndef _WIN32
     FILE* f = fopen(file_path.data(), "rb");
@@ -115,7 +154,7 @@ uint8_t* ResourceManager::ReadImage(std::string_view file_path, int* width, int*
     FILE* f = _wfopen(filePathW.c_str(), L"rb");
 #endif
 
-    stbi_set_flip_vertically_on_load(true);
+    stbi_set_flip_vertically_on_load(flip);
     stbi_uc* pixels = stbi_load_from_file(f, width, height, channels, STBI_rgb_alpha);
     ENVY_ASSERT(pixels != nullptr,
                 fmt::format("Failed to load texture image data.\n{}", stbi_failure_reason()));

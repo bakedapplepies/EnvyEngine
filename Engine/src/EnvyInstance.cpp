@@ -53,6 +53,23 @@ void EnvyInstance::SetViewport(int x, int y, int dx, int dy) const
     glViewport(x, y, dx, dy);
 }
 
+void EnvyInstance::SetFrontFaceOrder(FaceOrder face_order) const
+{
+    glEnable(GL_CULL_FACE);
+    glFrontFace(static_cast<GLenum>(face_order));
+    glCullFace(GL_BACK);
+}
+
+void EnvyInstance::SetDepthTesting(bool enable) const
+{
+    if (enable)
+    {
+        glEnable(GL_DEPTH_TEST);
+        glDepthFunc(GL_LESS);
+    }
+    else glDisable(GL_DEPTH_TEST);
+}
+
 void EnvyInstance::LoadShaderProgram(ShaderType shader_type, std::string_view file_path) const
 {
     m_GLResourceManager->LoadShaderProgram(shader_type, file_path);
@@ -89,6 +106,34 @@ const VertexArray* EnvyInstance::CreateVertexArray(const Vertex* vertices, uint3
 Pipeline* EnvyInstance::CreatePipeline() const
 {
     return m_GLResourceManager->CreatePipeline();
+}
+
+const UniformBuffer* EnvyInstance::CreateUBO(uint32_t ubo_block_size, uint32_t binding) const
+{
+    return m_GLResourceManager->CreateUBO(ubo_block_size, binding);
+}
+
+const Cubemap* EnvyInstance::CreateCubemap(TextureFormat format,
+                                           std::string_view right,
+                                           std::string_view left,
+                                           std::string_view top,
+                                           std::string_view bottom,
+                                           std::string_view front,
+                                           std::string_view back) const
+{
+    std::array<std::string_view, 6> texture2DPaths {
+        right, left, top, bottom, front, back
+    };
+    return m_GLResourceManager->CreateCubemap(format, texture2DPaths);
+}
+
+void EnvyInstance::Draw(const VAOChunk& vao_chunk) const
+{
+    glDrawElementsBaseVertex(GL_TRIANGLES,
+                             vao_chunk.elementsCount,
+                             GL_UNSIGNED_INT,
+                             reinterpret_cast<void*>(vao_chunk.elementsOffset * sizeof(float)),
+                             vao_chunk.vertex_offset);
 }
 
 ENVY_NAMESPACE_END

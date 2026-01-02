@@ -2,7 +2,6 @@
 
 #include <fmt/format.h>
 
-#include "GLFWCallbacks.h"
 #include "Path.h"
 
 Application::Application()
@@ -43,8 +42,12 @@ bool Application::Create(const WindowConfig& window_config, const Envy::EnvyInst
     }
 
     glfwMakeContextCurrent(m_window);
+    m_GLFWUserData = std::make_unique<GLFWUserData>();
+    glfwSetWindowUserPointer(m_window, m_GLFWUserData.get());
     glfwSetFramebufferSizeCallback(m_window, FramebufferSizeCallback);
+    glfwSetCursorPosCallback(m_window, MouseCallback);
     glfwSwapInterval(0);
+    glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
@@ -54,8 +57,7 @@ bool Application::Create(const WindowConfig& window_config, const Envy::EnvyInst
 
     m_applicationIsActive = true;
     m_envyInstance = &envy_instance;
-    m_renderer = std::make_unique<Renderer>(&envy_instance);
-
+    
     return true;
 }
 
@@ -65,17 +67,21 @@ void Application::Destroy()
     glfwTerminate();
 
     m_window = nullptr;
+    m_GLFWUserData.reset();
     m_applicationIsActive = false;
 
     m_renderer.reset();
+    m_mainCamera = nullptr;
 }
 
 void Application::Run()
 {
+    m_renderer = std::make_unique<Renderer>(m_envyInstance);
+
     _LoadShaderPrograms();
     _LoadTexture2Ds();
     
-    m_envyInstance->SetViewport(0, 0, 1920, 1080);
+    m_envyInstance->SetViewport(0, 0, 1280, 720);
 
     std::array<Envy::Vertex, 4> vertices = {
         Envy::Vertex {
@@ -117,53 +123,101 @@ void Application::Run()
         .vertex_offset = 0
     };
 
+    const Envy::ShaderProgram* vertexShader =
+        m_envyInstance->GetShaderProgram(Path("src/shaders/default.vert").Str());
+    const Envy::ShaderProgram* fragmentShader =
+        m_envyInstance->GetShaderProgram(Path("src/shaders/default.frag").Str());
+
+    Transform quadTransform;
+        
     Material quadMaterial;
     quadMaterial.albedo = m_envyInstance->GetTexture2D(Path("resources/images/villager.png").Str());
     quadMaterial.pipeline = m_envyInstance->CreatePipeline();
-    quadMaterial.pipeline->SetVertexProgram(
-        m_envyInstance->GetShaderProgram(Path("src/shaders/default.vert").Str()));
-    quadMaterial.pipeline->SetFragmentProgram(
-        m_envyInstance->GetShaderProgram(Path("src/shaders/default.frag").Str()));
+    quadMaterial.pipeline->SetVertexProgram(vertexShader);
+    quadMaterial.pipeline->SetFragmentProgram(fragmentShader);
 
     RenderCommand renderCommand {
         .vertexArray = quad,
         .vaoChunk = &quadVAOChunk,
-        .material = &quadMaterial
+        .material = &quadMaterial,
+        .transform = &quadTransform
     };
+
+    Camera camera;
+    m_mainCamera = &camera;
+    m_GLFWUserData->cameraInControl = m_mainCamera;
+    camera.position = glm::vec3(0.0f, 0.0f, 2.0f);
+    camera.viewDir = glm::vec3(0.0f, 0.0f, -1.0f);
+
+    const Envy::Cubemap* skybox =
+        m_envyInstance->CreateCubemap(Envy::TextureFormat::RGBA8,
+                                      Path("resources/cubemaps/skybox/right.jpg").Str(),
+                                      Path("resources/cubemaps/skybox/left.jpg").Str(),
+                                      Path("resources/cubemaps/skybox/top.jpg").Str(),
+                                      Path("resources/cubemaps/skybox/bottom.jpg").Str(),
+                                      Path("resources/cubemaps/skybox/front.jpg").Str(),
+                                      Path("resources/cubemaps/skybox/back.jpg").Str());
 
     float beginTime = glfwGetTime();
     float totalTime = 0.0f;
+    float deltaTime = 0.0f;
     uint32_t totalFrames = 0;
     
     while (m_applicationIsActive)
     {
-        totalTime += glfwGetTime() - beginTime;
+        deltaTime = glfwGetTime() - beginTime;
+        totalTime += deltaTime;
         beginTime = glfwGetTime();
 
         m_envyInstance->ClearBuffer();
         m_envyInstance->ClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
-        m_renderer->Render(renderCommand);
+        m_renderer->Render(m_mainCamera, skybox, renderCommand);
         glfwSwapBuffers(m_window);
 
-        _ProcessInput();
+        _ProcessInput(deltaTime);
 
         if (totalTime >= 1.0f)
         {
             totalTime = 0.0f;
-            fmt::println("{}", totalFrames);
+            fmt::println("FPS: {}", totalFrames);
             totalFrames = 0;
         }
         totalFrames++;
     }
 }
 
-void Application::_ProcessInput()
+void Application::_ProcessInput(float delta_time)
 {
     glfwPollEvents();
     if (glfwGetKey(m_window, GLFW_KEY_Q) == GLFW_PRESS)
     {
         m_applicationIsActive = false;
+    }
+
+    if (glfwGetKey(m_window, GLFW_KEY_W) == GLFW_PRESS)
+    {
+        m_mainCamera->position += 4.0f * glm::normalize(glm::vec3(m_mainCamera->viewDir.x, 0.0f, m_mainCamera->viewDir.z)) * delta_time;
+    }
+    if (glfwGetKey(m_window, GLFW_KEY_S) == GLFW_PRESS)
+    {
+        m_mainCamera->position -= 4.0f * glm::normalize(glm::vec3(m_mainCamera->viewDir.x, 0.0f, m_mainCamera->viewDir.z)) * delta_time;
+    }
+    if (glfwGetKey(m_window, GLFW_KEY_A) == GLFW_PRESS)
+    {
+        m_mainCamera->position += 4.0f * glm::normalize(glm::cross(glm::vec3(0.0f, 1.0f, 0.0f), m_mainCamera->viewDir)) * delta_time;
+    }
+    if (glfwGetKey(m_window, GLFW_KEY_D) == GLFW_PRESS)
+    {
+        m_mainCamera->position -= 4.0f * glm::normalize(glm::cross(glm::vec3(0.0f, 1.0f, 0.0f), m_mainCamera->viewDir)) * delta_time;
+    }
+    if (glfwGetKey(m_window, GLFW_KEY_SPACE) == GLFW_PRESS)
+    {
+        m_mainCamera->position += 4.0f * glm::vec3(0.0f, 1.0f, 0.0f) * delta_time;
+    }
+    if (glfwGetKey(m_window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+    {
+        m_mainCamera->position -= 4.0f * glm::vec3(0.0f, 1.0f, 0.0f) * delta_time;
     }
 }
 

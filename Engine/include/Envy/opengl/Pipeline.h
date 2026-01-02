@@ -21,6 +21,10 @@ public:
     void SetFragmentProgram(const ShaderProgram* program);
     void SetComputeProgram(const ShaderProgram* program);
 
+    const ShaderProgram* GetVertexProgram() const;
+    const ShaderProgram* GetFragmentProgram() const;
+    const ShaderProgram* GetComputeProgram() const;
+
     void Bind() const;
     void BindCS() const;
     void UnbindCS() const;

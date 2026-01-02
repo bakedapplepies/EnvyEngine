@@ -32,7 +32,7 @@ Texture2D::Texture2D(Texture2D&& other) noexcept
     m_textureID = other.m_textureID;
     m_format = other.m_format;
 
-    other.m_textureID = 0;
+    other.m_textureID = GL_NONE;
     other.m_format = TextureFormat::NONE;
 }
 
@@ -41,7 +41,7 @@ Texture2D& Texture2D::operator=(Texture2D&& other) noexcept
     m_textureID = other.m_textureID;
     m_format = other.m_format;
 
-    other.m_textureID = 0;
+    other.m_textureID = GL_NONE;
     other.m_format = TextureFormat::NONE;
 
     return *this;

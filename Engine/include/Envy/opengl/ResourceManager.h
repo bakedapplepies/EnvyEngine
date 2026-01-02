@@ -10,6 +10,8 @@
 #include "Envy/opengl/Texture2D.h"
 #include "Envy/opengl/VertexArray.h"
 #include "Envy/opengl/Pipeline.h"
+#include "Envy/opengl/UniformBuffer.h"
+#include "Envy/opengl/Cubemap.h"
 
 ENVY_NAMESPACE_START
 
@@ -30,9 +32,14 @@ public:
     const VertexArray* CreateVAO(const Vertex* vertices, uint32_t n_vertices,
                                  const GLuint* indices, uint32_t n_indices);
     Pipeline* CreatePipeline();
+    const UniformBuffer* CreateUBO(uint32_t ubo_block_size, uint32_t binding);
+    const Cubemap* CreateCubemap(TextureFormat format,
+                                 const std::array<std::string_view, 6>& texture2D_paths);
 
     static std::string ReadFile(std::string_view file_path);
-    static uint8_t* ReadImage(std::string_view file_path, int* width, int* height, int* channels);
+    static uint8_t* ReadImage(std::string_view file_path,
+                              int* width, int* height, int* channels,
+                              bool flip = true);
 
 private:
     std::unordered_map<std::string, ShaderProgram> m_shaderPrograms;
@@ -40,6 +47,8 @@ private:
     std::vector<Texture2D> m_texture2Ds;
     std::vector<VertexArray> m_VAOs;
     std::vector<Pipeline> m_pipelines;
+    std::vector<UniformBuffer> m_UBOs;
+    std::vector<Cubemap> m_cubemaps;
 };
 
 ENVY_NAMESPACE_END

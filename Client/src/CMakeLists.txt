@@ -5,6 +5,8 @@ add_executable(${PROJECT_NAME}
     GLFWCallbacks.cpp
     Path.cpp
     Material.cpp
+    Transform.cpp
+    Camera.cpp
 )
 
 add_dependencies(${PROJECT_NAME}

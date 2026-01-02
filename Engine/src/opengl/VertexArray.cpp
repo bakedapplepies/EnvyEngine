@@ -2,10 +2,12 @@
 
 ENVY_NAMESPACE_START
 
+// TODO: Add bits to specify attributes
 VertexArray::VertexArray(const Vertex* vertices, uint32_t n_vertices,
                          const GLuint* indices, uint32_t n_indices)
 {
-    const GLuint VBO_BIND_INDEX = 0;
+    const GLuint VBO_BIND_INDEX_PER_VERTEX = 0;
+    const GLuint VBO_BIND_INDEX_PER_INSTANCE = 1;
 
     glCreateBuffers(1, &m_vboID);
     glNamedBufferStorage(m_vboID,
@@ -20,20 +22,27 @@ VertexArray::VertexArray(const Vertex* vertices, uint32_t n_vertices,
                          GL_DYNAMIC_STORAGE_BIT);
 
     glCreateVertexArrays(1, &m_vaoID);
-    glVertexArrayVertexBuffer(m_vaoID, VBO_BIND_INDEX, m_vboID, 0, sizeof(Vertex));
+    glVertexArrayVertexBuffer(m_vaoID, VBO_BIND_INDEX_PER_VERTEX, m_vboID, 0, sizeof(Vertex));
     glVertexArrayElementBuffer(m_vaoID, m_eboID);
 
     glEnableVertexArrayAttrib(m_vaoID, 0);
     glEnableVertexArrayAttrib(m_vaoID, 1);
     glEnableVertexArrayAttrib(m_vaoID, 2);
+    // glEnableVertexArrayAttrib(m_vaoID, 3);
 
     glVertexArrayAttribFormat(m_vaoID, 0, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex, position));
     glVertexArrayAttribFormat(m_vaoID, 1, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex, normal));
     glVertexArrayAttribFormat(m_vaoID, 2, 2, GL_FLOAT, GL_FALSE, offsetof(Vertex, uv));
+    // glVertexArrayAttribFormat(m_vaoID, 0, 1, GL_UNSIGNED_INT, GL_FALSE, 0);
 
-    glVertexArrayAttribBinding(m_vaoID, 0, VBO_BIND_INDEX);
-    glVertexArrayAttribBinding(m_vaoID, 1, VBO_BIND_INDEX);
-    glVertexArrayAttribBinding(m_vaoID, 2, VBO_BIND_INDEX);
+    glVertexArrayAttribBinding(m_vaoID, 0, VBO_BIND_INDEX_PER_VERTEX);
+    glVertexArrayAttribBinding(m_vaoID, 1, VBO_BIND_INDEX_PER_VERTEX);
+    glVertexArrayAttribBinding(m_vaoID, 2, VBO_BIND_INDEX_PER_VERTEX);
+    // glVertexArrayAttribBinding(m_vaoID, 3, VBO_BIND_INDEX_PER_INSTANCE);
+
+    // glVertexArrayBindingDivisor(m_vaoID, 3, 1);
+    // glVertexAttribDivisor(3, 1);
+    // glVertexBindingDivisor(3, 1);
 }
 
 VertexArray::~VertexArray()

@@ -11,14 +11,10 @@ out gl_PerVertex
 };
 
 layout (location = 0) in vec3 i_Position;
-layout (location = 1) in vec3 i_Normal;
-layout (location = 2) in vec2 i_UV;
 
 layout (location = 0) out V_OUT
 {
-    vec3 o_WorldPosition;
-    vec3 o_Normal;
-    vec2 o_UV;
+    vec3 o_UV;
 } v_out;
 
 layout (binding = 0, std140) uniform GlobalUBO
@@ -29,14 +25,13 @@ layout (binding = 0, std140) uniform GlobalUBO
     vec4 u_cameraPos;
 };
 
-uniform mat4 u_model;
-
 void main()
 {
-    vec4 worldPosition = u_model * vec4(i_Position, 1.0);
-    v_out.o_WorldPosition = worldPosition.xyz;
-    v_out.o_Normal = i_Normal;
-    v_out.o_UV = i_UV;
+    v_out.o_UV = vec3(i_Position.x, i_Position.y, i_Position.z);
 
-    gl_Position = u_projection * u_view * worldPosition;
+    // remove the translation part of the view matrix
+    vec4 pos = u_projection * mat4(mat3(u_view)) * vec4(i_Position, 1.0);
+
+    gl_Position = pos.xyww;  // this is so that the resulting depth value will
+                             // always be 1.0 (perspective division)
 }

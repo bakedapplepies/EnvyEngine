@@ -3,12 +3,13 @@
 out vec4 FragColor;
 
 const uint TEXTURE_UNIT_0 = 0;
-const uint TEXTURE_UNIT_1 = 0;
-const uint TEXTURE_UNIT_2 = 0;
+const uint TEXTURE_UNIT_1 = 1;
+const uint TEXTURE_UNIT_2 = 2;
+const uint TEXTURE_UNIT_CUBEMAP = 3;
 
 layout (location = 0) in V_OUT
 {
-    vec3 o_Position;
+    vec3 o_WorldPosition;
     vec3 o_Normal;
     vec2 o_UV;
 } v_out;

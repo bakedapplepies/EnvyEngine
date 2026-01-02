@@ -60,6 +60,21 @@ void Pipeline::SetComputeProgram(const ShaderProgram* program)
     m_computeProgram->AssignPipeline(m_pipelineID);
 }
 
+const ShaderProgram* Pipeline::GetVertexProgram() const
+{
+    return m_vertexProgram;
+}
+
+const ShaderProgram* Pipeline::GetFragmentProgram() const
+{
+    return m_fragmentProgram;
+}
+
+const ShaderProgram* Pipeline::GetComputeProgram() const
+{
+    return m_computeProgram;
+}
+
 void Pipeline::Bind() const
 {
     glBindProgramPipeline(m_pipelineID);

@@ -29,6 +29,22 @@ struct Sampler2DConfig
     GLenum farFilter = GL_NEAREST;
 };
 
+struct Sampler3DConfig
+{
+    GLenum wrapX = GL_CLAMP_TO_EDGE;
+    GLenum wrapY = GL_CLAMP_TO_EDGE;
+    GLenum wrapZ = GL_CLAMP_TO_EDGE;
+    GLenum closeFilter = GL_LINEAR_MIPMAP_LINEAR;
+    GLenum farFilter = GL_NEAREST;
+};
+
+enum class FaceOrder : GLenum
+{
+    CLOCKWISE = GL_CW,
+    COUNTER_CLOCKWISE = GL_CCW,
+    NONE  
+};
+
 enum class ShaderType : GLenum
 {
     VERTEX = GL_VERTEX_SHADER,

@@ -3,6 +3,8 @@ set(L${PROJECT_NAME}PublicHeaders
     ${PROJECT_SOURCE_DIR}/include/Envy/opengl/Texture2D.h
     ${PROJECT_SOURCE_DIR}/include/Envy/opengl/VertexArray.h
     ${PROJECT_SOURCE_DIR}/include/Envy/opengl/Pipeline.h
+    ${PROJECT_SOURCE_DIR}/include/Envy/opengl/UniformBuffer.h
+    ${PROJECT_SOURCE_DIR}/include/Envy/opengl/Cubemap.h
     ${PROJECT_SOURCE_DIR}/include/Envy/EnvyInstance.h
 )
 
@@ -12,6 +14,8 @@ set(L${PROJECT_NAME}Source
     opengl/Texture2D.cpp
     opengl/VertexArray.cpp
     opengl/Pipeline.cpp
+    opengl/UniformBuffer.cpp
+    opengl/Cubemap.cpp
     opengl/ResourceManager.cpp
     EnvyInstance.cpp
 )
