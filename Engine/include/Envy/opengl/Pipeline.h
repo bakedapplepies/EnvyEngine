@@ -19,15 +19,12 @@ public:
 
     void SetVertexProgram(const ShaderProgram* program);
     void SetFragmentProgram(const ShaderProgram* program);
-    void SetComputeProgram(const ShaderProgram* program);
 
     const ShaderProgram* GetVertexProgram() const;
     const ShaderProgram* GetFragmentProgram() const;
     const ShaderProgram* GetComputeProgram() const;
 
     void Bind() const;
-    void BindCS() const;
-    void UnbindCS() const;
 
     void UniformInt(std::string_view uniform_name, GLint value) const;
     void UniformFloat(std::string_view uniform_name, GLfloat value) const;
@@ -35,7 +32,6 @@ public:
 private:
     const ShaderProgram* m_vertexProgram = nullptr;
     const ShaderProgram* m_fragmentProgram = nullptr;
-    const ShaderProgram* m_computeProgram = nullptr;
     GLuint m_pipelineID = GL_NONE;
 };
 

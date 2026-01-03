@@ -7,8 +7,16 @@
 
 ENVY_NAMESPACE_START
 
+const GLuint VBO_BIND_INDEX_PER_VERTEX = 0;
+const GLuint VBO_BIND_INDEX_PER_INSTANCE = 1;
+
+const GLuint VAO_ATTRIB_INDEX_POSITION = 0;
+const GLuint VAO_ATTRIB_INDEX_NORMAL = 1;
+const GLuint VAO_ATTRIB_INDEX_UV = 2;
+const GLuint VAO_ATTRIB_INDEX_INSTANCE_0 = 3;
+
 struct Vertex
-{
+{   
     glm::vec3 position;
     glm::vec3 normal;
     glm::vec2 uv;
@@ -18,7 +26,14 @@ struct VAOChunk
 {
     uint32_t elementsOffset;
     uint32_t elementsCount;
-    uint32_t vertex_offset;
+    int vertexOffset;
+};
+
+struct IndirectCommand
+{
+    const Envy::VAOChunk* vaoChunk = nullptr;
+    uint32_t instanceCount = 1;
+    uint32_t baseInstance = 0;
 };
 
 struct Sampler2DConfig

@@ -10,10 +10,18 @@
 
 struct RenderCommand
 {
-    const Envy::VertexArray* vertexArray;
-    const Envy::VAOChunk* vaoChunk;
-    const Material* material;
-    const Transform* transform;
+    const Envy::VertexArray* vertexArray = nullptr;
+    const Envy::VAOChunk* vaoChunk = nullptr;
+    const Material* material = nullptr;
+    const Transform* transform = nullptr;
+};
+
+struct RenderCommandIndirect
+{
+    const Envy::VertexArray* vertexArray = nullptr;
+    const Envy::IndirectBuffer* indirectBuffer = nullptr;
+    const Material* material = nullptr;
+    const Transform* transform = nullptr;
 };
 
 struct GlobalUBO
@@ -33,6 +41,12 @@ public:
     void Render(const Camera* camera,
                 const Envy::Cubemap* cubemap,
                 const RenderCommand& render_command) const;
+    void RenderIndirect(const Camera* camera,
+                        const Envy::Cubemap* cubemap,
+                        const RenderCommandIndirect& render_command_indirect) const;
+
+private:
+    void _UpdateGlobalUBO(const Camera* camera) const;
 
 private:
     const Envy::EnvyInstance* m_envyInstance = nullptr;

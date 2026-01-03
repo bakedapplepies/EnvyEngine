@@ -11,6 +11,7 @@
 #include "Envy/opengl/VertexArray.h"
 #include "Envy/opengl/Pipeline.h"
 #include "Envy/opengl/UniformBuffer.h"
+#include "Envy/opengl/IndirectBuffer.h"
 #include "Envy/opengl/Cubemap.h"
 
 ENVY_NAMESPACE_START
@@ -33,6 +34,8 @@ public:
                                  const GLuint* indices, uint32_t n_indices);
     Pipeline* CreatePipeline();
     const UniformBuffer* CreateUBO(uint32_t ubo_block_size, uint32_t binding);
+    const IndirectBuffer* CreateIndirectBuffer(uint32_t command_count,
+                                               const DrawElementsIndirectCommand* commands);
     const Cubemap* CreateCubemap(TextureFormat format,
                                  const std::array<std::string_view, 6>& texture2D_paths);
 
@@ -48,6 +51,7 @@ private:
     std::vector<VertexArray> m_VAOs;
     std::vector<Pipeline> m_pipelines;
     std::vector<UniformBuffer> m_UBOs;
+    std::vector<IndirectBuffer> m_indirectBuffers;
     std::vector<Cubemap> m_cubemaps;
 };
 

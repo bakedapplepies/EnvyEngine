@@ -1,7 +1,5 @@
 #pragma once
 
-#include <memory>
-
 #include "Envy/core/Defines.h"
 #include "Envy/Envy.h"
 #include "Envy/opengl/Pipeline.h"

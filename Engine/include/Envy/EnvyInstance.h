@@ -35,6 +35,8 @@ public:
                                                         const GLuint* indices, uint32_t n_indices) const;
     ENVY_NODISCARD  Pipeline* CreatePipeline() const;
     ENVY_NODISCARD const UniformBuffer* CreateUBO(uint32_t ubo_block_size, uint32_t binding) const;
+    ENVY_NODISCARD const IndirectBuffer* CreateIndirectBuffer(uint32_t command_count,
+                                                              const DrawElementsIndirectCommand* commands);
     ENVY_NODISCARD const Cubemap* CreateCubemap(TextureFormat format,
                                                 std::string_view right,
                                                 std::string_view left,
@@ -43,7 +45,10 @@ public:
                                                 std::string_view front,
                                                 std::string_view back) const;
 
+    void ConstructIndirectCommand() const;
+
     void Draw(const VAOChunk& vao_chunk) const;
+    void DrawIndirect(uint32_t indirect_count) const;
 
 private:
     bool m_activeInstance = false;

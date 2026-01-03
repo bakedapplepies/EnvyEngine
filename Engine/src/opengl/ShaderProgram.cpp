@@ -57,6 +57,8 @@ void ShaderProgram::AssignPipeline(GLuint pipelineID) const
 
     ENVY_ASSERT(stage != GL_NONE, "Unknown shader stage.");
 
+    const void* a = (uintptr_t*)1 + 2;
+
     glUseProgramStages(pipelineID, stage, m_programID);
 }
 

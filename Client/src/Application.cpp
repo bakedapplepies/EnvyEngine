@@ -3,6 +3,7 @@
 #include <fmt/format.h>
 
 #include "Path.h"
+#include "meshes/Quad.h"
 
 Application::Application()
 {}
@@ -83,64 +84,32 @@ void Application::Run()
     
     m_envyInstance->SetViewport(0, 0, 1280, 720);
 
-    std::array<Envy::Vertex, 4> vertices = {
-        Envy::Vertex {
-            .position = glm::vec3(-1.0f,  1.0f,  0.0f),
-            .normal   = glm::vec3( 0.0f,  0.0f,  0.0f),
-            .uv       = glm::vec2( 0.0f,  1.0f)
-        },
-        Envy::Vertex {
-            .position = glm::vec3( 1.0f,  1.0f,  0.0f),
-            .normal   = glm::vec3( 0.0f,  0.0f,  0.0f),
-            .uv       = glm::vec2( 1.0f,  1.0f)
-        },
-        Envy::Vertex {
-            .position = glm::vec3( 1.0f, -1.0f,  0.0f),
-            .normal   = glm::vec3( 0.0f,  0.0f,  0.0f),
-            .uv       = glm::vec2( 1.0f,  0.0f)
-        },
-        Envy::Vertex {
-            .position = glm::vec3(-1.0f, -1.0f,  0.0f),
-            .normal   = glm::vec3( 0.0f,  0.0f,  0.0f),
-            .uv       = glm::vec2( 0.0f,  0.0f)
+    std::vector<glm::vec3> quadPositions;
+    quadPositions.resize(10000);
+    for (int i = 0; i < 100; i++)
+    {
+        for (int j = 0; j < 100; j++)
+        {
+            quadPositions[100 * i + j] = glm::vec3(2.0f * i, 0.0f, -2.0f * j);
         }
+    }
+    Quad quad(m_envyInstance);
+
+    RenderCommand quadRenderCmd = quad.GetRenderCmd();
+    quadRenderCmd.vertexArray->AddInstanceBuffer(3, sizeof(glm::vec3), 10000, quadPositions.data());
+    Envy::DrawElementsIndirectCommand indirectCmd {
+        .count = quadRenderCmd.vaoChunk->elementsCount,
+        .instanceCount = 10000,
+        .firstIndex = quadRenderCmd.vaoChunk->elementsOffset,
+        .baseVertex = quadRenderCmd.vaoChunk->vertexOffset,
+        .baseInstance = 0
     };
-
-    std::array<GLuint, 6> indices = {
-        0, 1, 2,
-        0, 2, 3
-    };
-
-    const Envy::VertexArray* quad =
-        m_envyInstance->CreateVertexArray(vertices.data(),
-                                          vertices.size(),
-                                          indices.data(),
-                                          indices.size());
-
-    Envy::VAOChunk quadVAOChunk = {
-        .elementsOffset = 0,
-        .elementsCount = indices.size(),
-        .vertex_offset = 0
-    };
-
-    const Envy::ShaderProgram* vertexShader =
-        m_envyInstance->GetShaderProgram(Path("src/shaders/default.vert").Str());
-    const Envy::ShaderProgram* fragmentShader =
-        m_envyInstance->GetShaderProgram(Path("src/shaders/default.frag").Str());
-
-    Transform quadTransform;
-        
-    Material quadMaterial;
-    quadMaterial.albedo = m_envyInstance->GetTexture2D(Path("resources/images/villager.png").Str());
-    quadMaterial.pipeline = m_envyInstance->CreatePipeline();
-    quadMaterial.pipeline->SetVertexProgram(vertexShader);
-    quadMaterial.pipeline->SetFragmentProgram(fragmentShader);
-
-    RenderCommand renderCommand {
-        .vertexArray = quad,
-        .vaoChunk = &quadVAOChunk,
-        .material = &quadMaterial,
-        .transform = &quadTransform
+    Envy::IndirectBuffer quadIndirectBuffer(1, &indirectCmd);
+    RenderCommandIndirect quadRenderCmdIndirect {
+        .vertexArray = quadRenderCmd.vertexArray,
+        .indirectBuffer = &quadIndirectBuffer,
+        .material = quadRenderCmd.material,
+        .transform = quadRenderCmd.transform
     };
 
     Camera camera;
@@ -172,7 +141,7 @@ void Application::Run()
         m_envyInstance->ClearBuffer();
         m_envyInstance->ClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
-        m_renderer->Render(m_mainCamera, skybox, renderCommand);
+        m_renderer->RenderIndirect(m_mainCamera, skybox, quadRenderCmdIndirect);
         glfwSwapBuffers(m_window);
 
         _ProcessInput(deltaTime);

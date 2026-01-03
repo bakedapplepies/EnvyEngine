@@ -18,11 +18,16 @@ public:
     VertexArray& operator=(VertexArray&& other) noexcept;
 
     void Bind() const;
+    void AddInstanceBuffer(uint32_t components,
+                           uint32_t stride,
+                           uint32_t size,
+                           const void* data) const;
 
 private:
     GLuint m_vboID = GL_NONE;
     GLuint m_eboID = GL_NONE;
     GLuint m_vaoID = GL_NONE;
+    GLuint m_instanceBufferID = GL_NONE;
 };
 
 ENVY_NAMESPACE_END

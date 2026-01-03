@@ -113,6 +113,12 @@ const UniformBuffer* EnvyInstance::CreateUBO(uint32_t ubo_block_size, uint32_t b
     return m_GLResourceManager->CreateUBO(ubo_block_size, binding);
 }
 
+const IndirectBuffer* EnvyInstance::CreateIndirectBuffer(uint32_t command_count,
+                                               const DrawElementsIndirectCommand* commands)
+{
+    return m_GLResourceManager->CreateIndirectBuffer(command_count, commands);
+}
+
 const Cubemap* EnvyInstance::CreateCubemap(TextureFormat format,
                                            std::string_view right,
                                            std::string_view left,
@@ -133,7 +139,12 @@ void EnvyInstance::Draw(const VAOChunk& vao_chunk) const
                              vao_chunk.elementsCount,
                              GL_UNSIGNED_INT,
                              reinterpret_cast<void*>(vao_chunk.elementsOffset * sizeof(float)),
-                             vao_chunk.vertex_offset);
+                             vao_chunk.vertexOffset);
+}
+
+void EnvyInstance::DrawIndirect(uint32_t indirect_count) const
+{
+    glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, 0, indirect_count, 0);
 }
 
 ENVY_NAMESPACE_END

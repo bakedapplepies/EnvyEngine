@@ -7,6 +7,7 @@ add_executable(${PROJECT_NAME}
     Material.cpp
     Transform.cpp
     Camera.cpp
+    meshes/Quad.cpp
 )
 
 add_dependencies(${PROJECT_NAME}

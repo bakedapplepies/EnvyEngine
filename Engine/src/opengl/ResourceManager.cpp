@@ -23,6 +23,10 @@ ResourceManager::~ResourceManager()
     m_shaderPrograms.clear();
     m_texture2DIndices.clear();
     m_texture2Ds.clear();
+    m_VAOs.clear();
+    m_pipelines.clear();
+    m_UBOs.clear();
+    m_indirectBuffers.clear();
 }
 
 void ResourceManager::LoadShaderProgram(ShaderType shader_type, std::string_view file_path)
@@ -102,6 +106,14 @@ const UniformBuffer* ResourceManager::CreateUBO(uint32_t ubo_block_size, uint32_
     m_UBOs.emplace_back(UniformBuffer(ubo_block_size, binding));
 
     return &m_UBOs.back();
+}
+
+const IndirectBuffer* ResourceManager::CreateIndirectBuffer(uint32_t command_count,
+                                                            const DrawElementsIndirectCommand* commands)
+{
+    m_indirectBuffers.emplace_back(IndirectBuffer(command_count, commands));
+
+    return &m_indirectBuffers.back();
 }
 
 const Cubemap* ResourceManager::CreateCubemap(TextureFormat format,
