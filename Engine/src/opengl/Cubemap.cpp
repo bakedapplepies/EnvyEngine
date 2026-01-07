@@ -8,14 +8,13 @@ Cubemap::Cubemap(int width,
                  int height,
                  TextureFormat format,
                  const std::array<uint8_t*, 6>& data,
-                 const Sampler3DConfig& sampler3DConfig)
+                 const Sampler2DConfig& sampler2DConfig)
 {
     glCreateTextures(GL_TEXTURE_CUBE_MAP, 1, &m_cubemapID);
-    glTextureParameteri(m_cubemapID, GL_TEXTURE_WRAP_S, sampler3DConfig.wrapX);
-    glTextureParameteri(m_cubemapID, GL_TEXTURE_WRAP_T, sampler3DConfig.wrapY);
-    glTextureParameteri(m_cubemapID, GL_TEXTURE_WRAP_R, sampler3DConfig.wrapZ);
-    glTextureParameteri(m_cubemapID, GL_TEXTURE_MIN_FILTER, sampler3DConfig.closeFilter);
-    glTextureParameteri(m_cubemapID, GL_TEXTURE_MAG_FILTER, sampler3DConfig.farFilter);
+    glTextureParameteri(m_cubemapID, GL_TEXTURE_WRAP_S, sampler2DConfig.wrapX);
+    glTextureParameteri(m_cubemapID, GL_TEXTURE_WRAP_T, sampler2DConfig.wrapY);
+    glTextureParameteri(m_cubemapID, GL_TEXTURE_MIN_FILTER, sampler2DConfig.closeFilter);
+    glTextureParameteri(m_cubemapID, GL_TEXTURE_MAG_FILTER, sampler2DConfig.farFilter);
 
     glTextureStorage2D(m_cubemapID, 1, static_cast<GLenum>(format), width, height);
     for (uint32_t face = 0; face < 6; face++)

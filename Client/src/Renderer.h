@@ -2,6 +2,7 @@
 
 #include <glm/glm.hpp>
 
+#include "core/Client.h"
 #include "Envy/EnvyInstance.h"
 #include "Envy/opengl/VertexArray.h"
 #include "Material.h"
@@ -10,7 +11,7 @@
 
 struct RenderCommand
 {
-    const Envy::VertexArray* vertexArray = nullptr;
+    const GLResource<Envy::VertexArray> vertexArray;
     const Envy::VAOChunk* vaoChunk = nullptr;
     const Material* material = nullptr;
     const Transform* transform = nullptr;
@@ -18,8 +19,8 @@ struct RenderCommand
 
 struct RenderCommandIndirect
 {
-    const Envy::VertexArray* vertexArray = nullptr;
-    const Envy::IndirectBuffer* indirectBuffer = nullptr;
+    const GLResource<Envy::VertexArray> vertexArray;
+    const GLResource<Envy::IndirectBuffer> indirectBuffer;
     const Material* material = nullptr;
     const Transform* transform = nullptr;
 };
@@ -39,16 +40,19 @@ public:
     ~Renderer();
 
     void Render(const Camera* camera,
-                const Envy::Cubemap* cubemap,
+                const GLResource<Envy::Cubemap>& cubemap,
                 const RenderCommand& render_command) const;
     void RenderIndirect(const Camera* camera,
-                        const Envy::Cubemap* cubemap,
+                        const GLResource<Envy::Cubemap>& cubemap,
                         const RenderCommandIndirect& render_command_indirect) const;
 
 private:
     void _UpdateGlobalUBO(const Camera* camera) const;
+    void _RenderToScreenQuad() const;
 
 private:
     const Envy::EnvyInstance* m_envyInstance = nullptr;
-    const Envy::UniformBuffer* m_globalUBO = nullptr;
+    GLResource<Envy::UniformBuffer> m_globalUBO;
+    GLResource<Envy::Framebuffer> m_fbo;
+    GLResource<Envy::VertexArray> m_screenQuadVAO;
 };

@@ -13,7 +13,7 @@ public:
             int height,
             TextureFormat format,
             const std::array<uint8_t*, 6>& data,
-            const Sampler3DConfig& sampler3DConfig = Sampler3DConfig());
+            const Sampler2DConfig& sampler2DConfig = Sampler2DConfig());
     ~Cubemap();
     Cubemap(const Cubemap&) = delete;
     Cubemap(Cubemap&& other) noexcept;

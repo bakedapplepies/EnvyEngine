@@ -26,22 +26,14 @@ Quad::Quad(const Envy::EnvyInstance* envy_instance)
             .uv       = glm::vec2( 0.0f,  0.0f)
         }
     };
-
     std::array<GLuint, 6> indices = {
         0, 1, 2,
         0, 2, 3
     };
-
     m_vao = envy_instance->CreateVertexArray(vertices.data(),
                                              vertices.size(),
                                              indices.data(),
                                              indices.size());
-
-    m_vaoChunk = Envy::VAOChunk {
-        .elementsOffset = 0,
-        .elementsCount = 36,
-        .vertexOffset = 0
-    };
 
     const Envy::ShaderProgram* vertexShader =
         envy_instance->GetShaderProgram(Path("src/shaders/default.vert").Str());
@@ -56,9 +48,15 @@ Quad::Quad(const Envy::EnvyInstance* envy_instance)
 
 RenderCommand Quad::GetRenderCmd() const
 {
+    static Envy::VAOChunk vaoChunk = Envy::VAOChunk {
+        .elementsOffset = 0,
+        .elementsCount = 6,
+        .vertexOffset = 0
+    };
+
     return RenderCommand {
         .vertexArray = m_vao,
-        .vaoChunk = &m_vaoChunk,
+        .vaoChunk = &vaoChunk,
         .material = &material,
         .transform = &transform
     };

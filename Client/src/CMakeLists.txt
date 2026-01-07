@@ -13,13 +13,11 @@ add_executable(${PROJECT_NAME}
 add_dependencies(${PROJECT_NAME}
     LEnvyEngine
     GLFW_EXTERN
-    GLAD
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE
     ${PROJECT_SOURCE_DIR}/include
     ${GLFW_INSTALL_DIR}/install/include
-    ${ENVY_PUBLIC_INCLUDES}
 )
 
 target_link_directories(${PROJECT_NAME} PRIVATE
@@ -31,7 +29,6 @@ target_link_directories(${PROJECT_NAME} PRIVATE
 target_link_libraries(${PROJECT_NAME} PRIVATE
     LEnvyEngine
     glfw3
-    GLAD
 )
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE

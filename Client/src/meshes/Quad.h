@@ -17,6 +17,5 @@ public:
     Transform transform;
 
 private:
-    const Envy::VertexArray* m_vao;
-    Envy::VAOChunk m_vaoChunk;
+    GLResource<Envy::VertexArray> m_vao;
 };

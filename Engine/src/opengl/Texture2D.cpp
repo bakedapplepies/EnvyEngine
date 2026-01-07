@@ -47,18 +47,28 @@ Texture2D& Texture2D::operator=(Texture2D&& other) noexcept
     return *this;
 }
 
-void Texture2D::Bind(GLuint slot) const
+void Texture2D::Bind(GLuint unit) const
 {
-    glBindTextureUnit(slot, m_textureID);
+    glBindTextureUnit(unit, m_textureID);
 }
 
-void Texture2D::MakeWriteAccess(GLuint unit) const
+void Texture2D::MakeImageWriteAccess(GLuint unit) const
 {
     glBindImageTexture(unit,
                        m_textureID,
                        0, GL_FALSE,
                        0,
                        GL_WRITE_ONLY,
+                       static_cast<GLenum>(m_format));
+}
+
+void Texture2D::MakeImageReadAccess(GLuint unit) const
+{
+    glBindImageTexture(unit,
+                       m_textureID,
+                       0, GL_FALSE,
+                       0,
+                       GL_READ_ONLY,
                        static_cast<GLenum>(m_format));
 }
 

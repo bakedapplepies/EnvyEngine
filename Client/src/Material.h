@@ -1,5 +1,7 @@
 #pragma once
 
+#include "core/Client.h"
+
 #include "Envy/opengl/Texture2D.h"
 #include "Envy/opengl/Pipeline.h"
 
@@ -9,6 +11,6 @@ public:
     Material();
     ~Material();
 
-    const Envy::Texture2D* albedo = nullptr;
-    Envy::Pipeline* pipeline = nullptr;
+    GLResource<Envy::Texture2D> albedo;
+    GLResource<Envy::Pipeline> pipeline;
 };

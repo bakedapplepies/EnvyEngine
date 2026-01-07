@@ -2,11 +2,11 @@
 
 ENVY_NAMESPACE_START
 
-IndirectBuffer::IndirectBuffer(uint32_t command_count, const DrawElementsIndirectCommand* commands)
+IndirectBuffer::IndirectBuffer(uint32_t command_count, const IndirectCommand* commands)
 {
     glCreateBuffers(1, &m_bufferID);
     glNamedBufferStorage(m_bufferID,
-                         sizeof(DrawElementsIndirectCommand) * command_count,
+                         sizeof(IndirectCommand) * command_count,
                          commands,
                          GL_DYNAMIC_STORAGE_BIT);
 

@@ -11,6 +11,7 @@ class Pipeline
 {
 public:
     Pipeline();
+    Pipeline(const ShaderProgram* vert_program, const ShaderProgram* frag_program);
     ~Pipeline();
     Pipeline(const Pipeline&) = delete;
     Pipeline(Pipeline&& other) noexcept;

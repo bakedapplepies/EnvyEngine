@@ -6,6 +6,7 @@ set(L${PROJECT_NAME}PublicHeaders
     ${PROJECT_SOURCE_DIR}/include/Envy/opengl/UniformBuffer.h
     ${PROJECT_SOURCE_DIR}/include/Envy/opengl/Cubemap.h
     ${PROJECT_SOURCE_DIR}/include/Envy/opengl/IndirectBuffer.h
+    ${PROJECT_SOURCE_DIR}/include/Envy/opengl/Framebuffer.h
     ${PROJECT_SOURCE_DIR}/include/Envy/EnvyInstance.h
 )
 
@@ -18,6 +19,7 @@ set(L${PROJECT_NAME}Source
     opengl/UniformBuffer.cpp
     opengl/Cubemap.cpp
     opengl/IndirectBuffer.cpp
+    opengl/Framebuffer.cpp
     opengl/ResourceManager.cpp
     EnvyInstance.cpp
 )
@@ -26,12 +28,11 @@ add_library(L${PROJECT_NAME}
     ${L${PROJECT_NAME}Source}
 )
 
-add_library(L${PROJECT_NAME}Deps INTERFACE)
-
-add_dependencies(L${PROJECT_NAME}Deps INTERFACE
+add_dependencies(L${PROJECT_NAME}
     FMT_EXTERN
     STB_IMAGE_WRITE
     STB_IMAGE_LOAD
+    GLAD
 )
 
 set(ENVY_PUBLIC_INCLUDES
@@ -39,31 +40,39 @@ set(ENVY_PUBLIC_INCLUDES
     ${ENVY_VENDOR_INCLUDES}
 CACHE PATH "Includes for EnvyEngine")
 
-target_include_directories(L${PROJECT_NAME} PRIVATE
-    ${PROJECT_SOURCE_DIR}/include
+target_include_directories(L${PROJECT_NAME} PUBLIC
+    L${PROJECT_NAME}PublicHeaders
     ${ENVY_VENDOR_INCLUDES}
 )
 
-target_link_directories(L${PROJECT_NAME}Deps INTERFACE
+target_include_directories(L${PROJECT_NAME} PRIVATE
+    ${PROJECT_SOURCE_DIR}/include
+)
+
+target_link_directories(L${PROJECT_NAME} PUBLIC
     $<IF:$<PLATFORM_ID:Windows>, ${FMT_INSTALL_DIR}/install/lib,
                                  ${FMT_INSTALL_DIR}/install/lib64>
     $<IF:$<PLATFORM_ID:Windows>, ${GLM_INSTALL_DIR}/install/lib,
                                  ${GLM_INSTALL_DIR}/install/lib64>
 )
 
-target_link_libraries(L${PROJECT_NAME}Deps INTERFACE
+target_link_libraries(L${PROJECT_NAME} PUBLIC
     $<IF:$<CONFIG:Debug>, fmtd, fmt>
     STB_IMAGE_WRITE
     STB_IMAGE_LOAD
     glm
+    GLAD
     $<IF:$<PLATFORM_ID:Windows>, opengl32 gdi32 user32 kernel32 shell32,
                                  GL>
 )
 
-target_link_libraries(L${PROJECT_NAME} PRIVATE L${PROJECT_NAME}Deps)
+# target_link_libraries(L${PROJECT_NAME} PRIVATE L${PROJECT_NAME}Deps)
 target_compile_definitions(L${PROJECT_NAME} PRIVATE
-    GLM_ENABLE_EXPERIMENTAL
     ENVY_ROOT_DIR="${PROJECT_SOURCE_DIR}"
+)
+
+target_compile_definitions(L${PROJECT_NAME} PUBLIC
+    GLM_ENABLE_EXPERIMENTAL
 )
 
 if (NOT BUILD_SHARED_LIBS)

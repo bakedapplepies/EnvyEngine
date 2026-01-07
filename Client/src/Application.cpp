@@ -81,8 +81,6 @@ void Application::Run()
 
     _LoadShaderPrograms();
     _LoadTexture2Ds();
-    
-    m_envyInstance->SetViewport(0, 0, 1280, 720);
 
     std::vector<glm::vec3> quadPositions;
     quadPositions.resize(10000);
@@ -93,21 +91,23 @@ void Application::Run()
             quadPositions[100 * i + j] = glm::vec3(2.0f * i, 0.0f, -2.0f * j);
         }
     }
+
     Quad quad(m_envyInstance);
 
     RenderCommand quadRenderCmd = quad.GetRenderCmd();
     quadRenderCmd.vertexArray->AddInstanceBuffer(3, sizeof(glm::vec3), 10000, quadPositions.data());
-    Envy::DrawElementsIndirectCommand indirectCmd {
+    Envy::IndirectCommand indirectCmd {
         .count = quadRenderCmd.vaoChunk->elementsCount,
         .instanceCount = 10000,
         .firstIndex = quadRenderCmd.vaoChunk->elementsOffset,
         .baseVertex = quadRenderCmd.vaoChunk->vertexOffset,
         .baseInstance = 0
     };
-    Envy::IndirectBuffer quadIndirectBuffer(1, &indirectCmd);
+    GLResource<Envy::IndirectBuffer> quadIndirectBuffer =
+        m_envyInstance->CreateIndirectBuffer(1, &indirectCmd);
     RenderCommandIndirect quadRenderCmdIndirect {
         .vertexArray = quadRenderCmd.vertexArray,
-        .indirectBuffer = &quadIndirectBuffer,
+        .indirectBuffer = quadIndirectBuffer,
         .material = quadRenderCmd.material,
         .transform = quadRenderCmd.transform
     };
@@ -118,8 +118,8 @@ void Application::Run()
     camera.position = glm::vec3(0.0f, 0.0f, 2.0f);
     camera.viewDir = glm::vec3(0.0f, 0.0f, -1.0f);
 
-    const Envy::Cubemap* skybox =
-        m_envyInstance->CreateCubemap(Envy::TextureFormat::RGBA8,
+    const GLResource<Envy::Cubemap> skybox =
+        m_envyInstance->CreateCubemap(Envy::TextureFormat::SRGBA8,
                                       Path("resources/cubemaps/skybox/right.jpg").Str(),
                                       Path("resources/cubemaps/skybox/left.jpg").Str(),
                                       Path("resources/cubemaps/skybox/top.jpg").Str(),
@@ -138,16 +138,13 @@ void Application::Run()
         totalTime += deltaTime;
         beginTime = glfwGetTime();
 
-        m_envyInstance->ClearBuffer();
-        m_envyInstance->ClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-
         m_renderer->RenderIndirect(m_mainCamera, skybox, quadRenderCmdIndirect);
         glfwSwapBuffers(m_window);
 
         _ProcessInput(deltaTime);
 
         if (totalTime >= 1.0f)
-        {
+        {       
             totalTime = 0.0f;
             fmt::println("FPS: {}", totalFrames);
             totalFrames = 0;
@@ -199,6 +196,12 @@ void Application::_LoadShaderPrograms() const
         Envy::ShaderType::FRAGMENT,
         Path("src/shaders/default.frag").Str());
     m_envyInstance->LoadShaderProgram(
+        Envy::ShaderType::VERTEX,
+        Path("src/shaders/screen_quad.vert").Str());
+    m_envyInstance->LoadShaderProgram(
+        Envy::ShaderType::FRAGMENT,
+        Path("src/shaders/screen_quad.frag").Str());
+    m_envyInstance->LoadShaderProgram(
         Envy::ShaderType::COMPUTE,
         Path("src/shaders/default.comp").Str());
 }
@@ -206,6 +209,6 @@ void Application::_LoadShaderPrograms() const
 void Application::_LoadTexture2Ds() const
 {
     m_envyInstance->LoadTexture2D(
-        Envy::TextureFormat::RGBA8,
+        Envy::TextureFormat::SRGBA8,
         Path("resources/images/villager.png").Str());
 }

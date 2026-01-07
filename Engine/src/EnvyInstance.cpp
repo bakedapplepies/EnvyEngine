@@ -70,6 +70,11 @@ void EnvyInstance::SetDepthTesting(bool enable) const
     else glDisable(GL_DEPTH_TEST);
 }
 
+void EnvyInstance::BindDefaultFramebuffer() const
+{
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
 void EnvyInstance::LoadShaderProgram(ShaderType shader_type, std::string_view file_path) const
 {
     m_GLResourceManager->LoadShaderProgram(shader_type, file_path);
@@ -85,47 +90,58 @@ const ShaderProgram* EnvyInstance::GetShaderProgram(std::string_view file_path) 
     return m_GLResourceManager->GetShaderProgram(file_path);
 }
 
-const Texture2D* EnvyInstance::GetTexture2D(std::string_view file_path) const
+const Resource<Texture2D> EnvyInstance::GetTexture2D(std::string_view file_path) const
 {
     return m_GLResourceManager->GetTexture2D(file_path);
 }
 
-const Texture2D* EnvyInstance::CreateTexture2DEmpty(TextureFormat texture_format,
+const Resource<Texture2D> EnvyInstance::CreateTexture2DEmpty(TextureFormat texture_format,
                                                     int width,
                                                     int height) const
 {
     return m_GLResourceManager->CreateTexture2DEmpty(texture_format, width, height);
 }
 
-const VertexArray* EnvyInstance::CreateVertexArray(const Vertex* vertices, uint32_t n_vertices,
+const Resource<VertexArray> EnvyInstance::CreateVertexArray(const Vertex* vertices, uint32_t n_vertices,
                                                    const GLuint* indices, uint32_t n_indices) const
 {
     return m_GLResourceManager->CreateVAO(vertices, n_vertices, indices, n_indices);
 }
 
-Pipeline* EnvyInstance::CreatePipeline() const
+Resource<Pipeline> EnvyInstance::CreatePipeline() const
 {
     return m_GLResourceManager->CreatePipeline();
 }
 
-const UniformBuffer* EnvyInstance::CreateUBO(uint32_t ubo_block_size, uint32_t binding) const
+Resource<Pipeline> EnvyInstance::CreatePipeline(const ShaderProgram* vert_program,
+                                       const ShaderProgram* frag_program) const
+{
+    return m_GLResourceManager->CreatePipeline(vert_program, frag_program);
+}
+
+const Resource<Framebuffer> EnvyInstance::CreateFramebuffer(int width, int height) const
+{
+    return m_GLResourceManager->CreateFramebuffer(width, height);
+}
+
+const Resource<UniformBuffer> EnvyInstance::CreateUBO(uint32_t ubo_block_size, uint32_t binding) const
 {
     return m_GLResourceManager->CreateUBO(ubo_block_size, binding);
 }
 
-const IndirectBuffer* EnvyInstance::CreateIndirectBuffer(uint32_t command_count,
-                                               const DrawElementsIndirectCommand* commands)
+const Resource<IndirectBuffer> EnvyInstance::CreateIndirectBuffer(uint32_t command_count,
+                                                                  const IndirectCommand* commands) const
 {
     return m_GLResourceManager->CreateIndirectBuffer(command_count, commands);
 }
 
-const Cubemap* EnvyInstance::CreateCubemap(TextureFormat format,
-                                           std::string_view right,
-                                           std::string_view left,
-                                           std::string_view top,
-                                           std::string_view bottom,
-                                           std::string_view front,
-                                           std::string_view back) const
+const Resource<Cubemap> EnvyInstance::CreateCubemap(TextureFormat format,
+                                                    std::string_view right,
+                                                    std::string_view left,
+                                                    std::string_view top,
+                                                    std::string_view bottom,
+                                                    std::string_view front,
+                                                    std::string_view back) const
 {
     std::array<std::string_view, 6> texture2DPaths {
         right, left, top, bottom, front, back

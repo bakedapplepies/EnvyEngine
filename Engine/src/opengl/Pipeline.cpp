@@ -7,6 +7,13 @@ Pipeline::Pipeline()
     glCreateProgramPipelines(1, &m_pipelineID);
 }
 
+Pipeline::Pipeline(const ShaderProgram* vert_program, const ShaderProgram* frag_program)
+{
+    glCreateProgramPipelines(1, &m_pipelineID);
+    SetVertexProgram(vert_program);
+    SetFragmentProgram(frag_program);
+}
+
 Pipeline::~Pipeline()
 {
     glDeleteProgramPipelines(1, &m_pipelineID);
@@ -38,7 +45,7 @@ Pipeline& Pipeline::operator=(Pipeline&& other) noexcept
     return *this;
 }
 
-void Pipeline::SetVertexProgram(const ShaderProgram* program)
+void Pipeline::             SetVertexProgram(const ShaderProgram* program)
 {
     m_vertexProgram = program;
     m_vertexProgram->AssignPipeline(m_pipelineID);

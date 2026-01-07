@@ -22,11 +22,12 @@ ResourceManager::~ResourceManager()
 {
     m_shaderPrograms.clear();
     m_texture2DIndices.clear();
-    m_texture2Ds.clear();
-    m_VAOs.clear();
-    m_pipelines.clear();
-    m_UBOs.clear();
-    m_indirectBuffers.clear();
+    m_texture2Ds.Clear();
+    m_VAOs.Clear();
+    m_pipelines.Clear();
+    m_UBOs.Clear();
+    m_indirectBuffers.Clear();
+    m_cubemaps.Clear();
 }
 
 void ResourceManager::LoadShaderProgram(ShaderType shader_type, std::string_view file_path)
@@ -54,9 +55,9 @@ void ResourceManager::LoadTexture2D(TextureFormat texture_format, std::string_vi
     int width, height, channels;  // TODO: channels is not used
     stbi_uc* imageData = ReadImage(file_path, &width, &height, &channels);
 
-    m_texture2DIndices[file_path.data()] = m_texture2Ds.size();
-    m_texture2Ds.emplace_back(Texture2D(width, height, texture_format));
-    m_texture2Ds.back().UploadImage(imageData, width, height);
+    m_texture2DIndices[file_path.data()] = m_texture2Ds.Size();
+    m_texture2Ds.AddBack(Texture2D(width, height, texture_format));
+    m_texture2Ds.GetBack()->UploadImage(imageData, width, height);
 
     stbi_image_free(imageData);
 }
@@ -69,55 +70,72 @@ const ShaderProgram* ResourceManager::GetShaderProgram(std::string_view file_pat
     return (foundProgram) ? &m_shaderPrograms.at(file_path.data()) : nullptr;
 }
 
-const Texture2D* ResourceManager::GetTexture2D(std::string_view file_path) const
+const Resource<Texture2D> ResourceManager::GetTexture2D(std::string_view file_path) const
 {
     bool foundTexture = m_texture2DIndices.find(file_path.data()) != m_texture2DIndices.end();
     ENVY_ASSERT(foundTexture, "Texture path not recognized.");
 
-    return (foundTexture) ? &m_texture2Ds.at(m_texture2DIndices.at(file_path.data())) : nullptr;
+    return (foundTexture) ? m_texture2Ds.GetAt(m_texture2DIndices.at(file_path.data()))
+                          : Resource<Texture2D>::empty;
 }
 
-const Texture2D* ResourceManager::CreateTexture2DEmpty(TextureFormat texture_format,
-                                                       int width,
-                                                       int height)
+const Resource<Texture2D> ResourceManager::CreateTexture2DEmpty(TextureFormat texture_format,
+                                                                int width,
+                                                                int height)
 {
-    m_texture2Ds.emplace_back(Texture2D(width, height, texture_format));
+    m_texture2Ds.AddBack(Texture2D(width, height, texture_format));
 
-    return &m_texture2Ds.back();
+    return m_texture2Ds.GetBack();
 }
 
-const VertexArray* ResourceManager::CreateVAO(const Vertex* vertices, uint32_t n_vertices,
-                                              const GLuint* indices, uint32_t n_indices)
+const Resource<VertexArray> ResourceManager::CreateVAO(const Vertex* vertices, uint32_t n_vertices,
+                                                       const GLuint* indices, uint32_t n_indices)
 {
-    m_VAOs.emplace_back(VertexArray(vertices, n_vertices, indices, n_indices));
+    m_VAOs.AddBack(VertexArray(vertices, n_vertices, indices, n_indices));
 
-    return &m_VAOs.back();
+    return m_VAOs.GetBack();
 }
 
-Pipeline* ResourceManager::CreatePipeline()
+Resource<Pipeline> ResourceManager::CreatePipeline()
 {
-    m_pipelines.emplace_back(Pipeline());
+    m_pipelines.AddBack(Pipeline());
 
-    return &m_pipelines.back();
+    return m_pipelines.GetBack();
 }
 
-const UniformBuffer* ResourceManager::CreateUBO(uint32_t ubo_block_size, uint32_t binding)
+Resource<Pipeline> ResourceManager::CreatePipeline(const ShaderProgram* vert_program,
+                                                   const ShaderProgram* frag_program)
 {
-    m_UBOs.emplace_back(UniformBuffer(ubo_block_size, binding));
+    m_pipelines.AddBack(Pipeline(vert_program, frag_program));
 
-    return &m_UBOs.back();
+    return m_pipelines.GetBack();
 }
 
-const IndirectBuffer* ResourceManager::CreateIndirectBuffer(uint32_t command_count,
-                                                            const DrawElementsIndirectCommand* commands)
+const Resource<Framebuffer> ResourceManager::CreateFramebuffer(int width, int height)
 {
-    m_indirectBuffers.emplace_back(IndirectBuffer(command_count, commands));
+    m_framebuffers.AddBack(Framebuffer(width, height));
 
-    return &m_indirectBuffers.back();
+    return m_framebuffers.GetBack();
 }
 
-const Cubemap* ResourceManager::CreateCubemap(TextureFormat format,
-                                              const std::array<std::string_view, 6>& texture2D_paths)
+const Resource<UniformBuffer> ResourceManager::CreateUBO(uint32_t ubo_block_size, uint32_t binding)
+{
+    m_UBOs.AddBack(UniformBuffer(ubo_block_size, binding));
+
+    return m_UBOs.GetBack();
+}
+
+const Resource<IndirectBuffer> ResourceManager::CreateIndirectBuffer(uint32_t command_count,
+                                                                     const IndirectCommand* commands)
+{
+    m_indirectBuffers.AddBack(IndirectBuffer(command_count, commands));
+
+    return m_indirectBuffers.GetBack();
+}
+
+const Resource<Cubemap>
+ResourceManager::CreateCubemap(TextureFormat format,
+                               const std::array<std::string_view, 6>& texture2D_paths)
 {
     std::array<uint8_t*, 6> data;
     int width, height, channels;
@@ -126,14 +144,14 @@ const Cubemap* ResourceManager::CreateCubemap(TextureFormat format,
         data[i] = ReadImage(texture2D_paths[i], &width, &height, &channels, false);
     }
 
-    m_cubemaps.emplace_back(Cubemap(width, height, format, data));
+    m_cubemaps.AddBack(Cubemap(width, height, format, data));
 
     for (uint32_t i = 0; i < 6; i++)
     {
         stbi_image_free(data[i]);
     }
 
-    return &m_cubemaps.back();
+    return m_cubemaps.GetBack();
 }
 
 std::string ResourceManager::ReadFile(std::string_view file_path)

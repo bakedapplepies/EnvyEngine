@@ -3,22 +3,14 @@
 #include <glad/glad.h>
 
 #include "Envy/core/Defines.h"
+#include "Envy/Envy.h"
 
 ENVY_NAMESPACE_START
-
-struct DrawElementsIndirectCommand
-{
-    uint32_t count;
-    uint32_t instanceCount;
-    uint32_t firstIndex;
-    int      baseVertex;
-    uint32_t baseInstance;
-};
 
 class IndirectBuffer
 {
 public:
-    IndirectBuffer(uint32_t command_count, const DrawElementsIndirectCommand* commands);
+    IndirectBuffer(uint32_t command_count, const IndirectCommand* commands);
     ~IndirectBuffer();
     IndirectBuffer(const IndirectBuffer&) = delete;
     IndirectBuffer(IndirectBuffer&& other) noexcept;
