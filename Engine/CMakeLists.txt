@@ -7,7 +7,6 @@ set(ENVY_VENDOR_INCLUDES
     ${PROJECT_SOURCE_DIR}/vendor
     ${PROJECT_SOURCE_DIR}/vendor/glad/include
     ${FMT_INSTALL_DIR}/install/include
-    ${GLFW_INSTALL_DIR}/install/include
     ${GLM_INSTALL_DIR}/install/include
 CACHE INTERNAL "")
 

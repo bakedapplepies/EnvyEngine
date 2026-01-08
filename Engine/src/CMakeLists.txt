@@ -41,11 +41,7 @@ set(ENVY_PUBLIC_INCLUDES
 CACHE PATH "Includes for EnvyEngine")
 
 target_include_directories(L${PROJECT_NAME} PUBLIC
-    L${PROJECT_NAME}PublicHeaders
     ${ENVY_VENDOR_INCLUDES}
-)
-
-target_include_directories(L${PROJECT_NAME} PRIVATE
     ${PROJECT_SOURCE_DIR}/include
 )
 
@@ -62,8 +58,8 @@ target_link_libraries(L${PROJECT_NAME} PUBLIC
     STB_IMAGE_LOAD
     glm
     GLAD
-    $<IF:$<PLATFORM_ID:Windows>, opengl32 gdi32 user32 kernel32 shell32,
-                                 GL>
+    $<IF:$<PLATFORM_ID:Windows>, opengl32 gdi32 user32 kernel32 shell32,  # Windows
+                                 GL>                                      # Linux
 )
 
 # target_link_libraries(L${PROJECT_NAME} PRIVATE L${PROJECT_NAME}Deps)

@@ -24,7 +24,7 @@ target_include_directories(GLAD PRIVATE glad/include)
 set(FMT_INSTALL_DIR ${CMAKE_CURRENT_BINARY_DIR}/extern/fmt CACHE INTERNAL "")
 ExternalProject_Add(
     FMT_EXTERN
-    PREFIX ${FMT_INSTALL_DIR}
+    PREFIX ${PROJECT_SOURCE_DIR}/vendor/fmt
     GIT_REPOSITORY https://github.com/fmtlib/fmt.git
     GIT_TAG befbc5fdb838040b3721d13b59e32edb122f224d
     UPDATE_DISCONNECTED FALSE
@@ -40,7 +40,7 @@ set_target_properties(FMT_LIBRARY PROPERTIES IMPORTED_LOCATION ${FMT_INSTALL_DIR
 set(GLM_INSTALL_DIR ${CMAKE_CURRENT_BINARY_DIR}/extern/glm CACHE INTERNAL "")
 ExternalProject_Add(
     GLM_EXTERN
-    PREFIX ${GLM_INSTALL_DIR}
+    PREFIX ${PROJECT_SOURCE_DIR}/vendor/glm
     GIT_REPOSITORY https://github.com/g-truc/glm.git
     GIT_TAG 8f6213d379a904f5ae910e09a114e066e25faf57
     UPDATE_DISCONNECTED FALSE

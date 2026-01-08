@@ -1,3 +1,6 @@
 build
 .cache
 .vscode
+
+Engine/vendor/fmt
+Engine/vendor/glm
