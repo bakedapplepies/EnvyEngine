@@ -2,5 +2,5 @@ build
 .cache
 .vscode
 
-Engine/vendor/fmt
-Engine/vendor/glm
+Engine/src/vendor/fmt
+Engine/src/vendor/glm
