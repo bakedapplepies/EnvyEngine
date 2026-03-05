@@ -31,8 +31,6 @@ add_library(L${PROJECT_NAME}
 )
 
 add_dependencies(L${PROJECT_NAME}
-    # fmt::fmt
-    # glm::glm
     FMT_LIBRARY
     GLM_LIBRARY
     STB_IMAGE_WRITE
@@ -42,8 +40,6 @@ add_dependencies(L${PROJECT_NAME}
 
 set(ENVY_PUBLIC_INCLUDES
     ${PROJECT_SOURCE_DIR}/include
-    # ${GLM_INSTALL_DIR}/install/include
-    # ${FMT_INSTALL_DIR}/install/include
 CACHE PATH "Includes for EnvyEngine")
 
 target_include_directories(L${PROJECT_NAME}
@@ -69,7 +65,6 @@ target_link_libraries(L${PROJECT_NAME} PUBLIC
                                  GL>                                      # Linux
 )
 
-# target_link_libraries(L${PROJECT_NAME} PRIVATE L${PROJECT_NAME}Deps)
 target_compile_definitions(L${PROJECT_NAME} PRIVATE
     ENVY_ROOT_DIR="${PROJECT_SOURCE_DIR}"
 )
@@ -116,20 +111,3 @@ target_link_options(L${PROJECT_NAME} PRIVATE
         -O3
     >
 )
-
-# if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
-#     target_compile_options(L${PROJECT_NAME} PRIVATE -O0 -g -fsanitize=address)
-#     target_link_options(L${PROJECT_NAME} PRIVATE -g -fsanitize=address)
-
-# elseif(${CMAKE_BUILD_TYPE} STREQUAL "Release")
-#     target_compile_options(L${PROJECT_NAME} PRIVATE -O3)
-#     target_link_options(L${PROJECT_NAME} PRIVATE -O3)
-#     target_compile_definitions(L${PROJECT_NAME} PRIVATE ENVY_RELEASE)
-
-# elseif(${CMAKE_BUILD_TYPE} STREQUAL "MinSizeRel")
-#     message("MinSizeRel config not supported yet!")
-    
-# elseif(${CMAKE_BUILD_TYPE} STREQUAL "RelWithDebInfo")
-#     message("RelWithDebInfo config not supported yet!")
-
-# endif()

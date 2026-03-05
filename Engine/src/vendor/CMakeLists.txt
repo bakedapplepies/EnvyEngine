@@ -12,8 +12,8 @@ add_library(STB_IMAGE_WRITE STATIC
 )
 target_include_directories(STB_IMAGE_WRITE 
     PUBLIC
-        $<INSTALL_INTERFACE:${PROJECT_SOURCE_DIR}/src/vendor>
-        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src/vendor>
+        $<INSTALL_INTERFACE:${PROJECT_SOURCE_DIR}/include/vendor/stb>
+        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include/vendor/stb>
 )
 
 add_library(STB_IMAGE_LOAD STATIC
@@ -21,17 +21,17 @@ add_library(STB_IMAGE_LOAD STATIC
 )
 target_include_directories(STB_IMAGE_LOAD
     PUBLIC
-        $<INSTALL_INTERFACE:${PROJECT_SOURCE_DIR}/src/vendor/stb>
-        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src/vendor/stb>
+        $<INSTALL_INTERFACE:${PROJECT_SOURCE_DIR}/include/vendor/stb>
+        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include/vendor/stb>
 )
 
 add_library(GLAD STATIC
-    glad/src/glad.c
+    glad/glad.c
 )
 target_include_directories(GLAD 
     PUBLIC
-        $<INSTALL_INTERFACE:${PROJECT_SOURCE_DIR}/src/vendor/glad/include>
-        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src/vendor/glad/include>
+        $<INSTALL_INTERFACE:${PROJECT_SOURCE_DIR}/include/vendor>
+        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include/vendor>
 )
 # target_compile_options(GLAD PRIVATE -pg)
 # target_link_options(GLAD PRIVATE -pg)
