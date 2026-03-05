@@ -1,7 +1,7 @@
 #include "Application.h"
 #include "Envy/EnvyInstance.h"
 
-int main()
+int main(int argc, char** argv)
 {
     // Object creation
     WindowConfig windowConfig {

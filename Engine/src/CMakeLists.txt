@@ -1,3 +1,5 @@
+add_subdirectory(vendor)
+
 set(L${PROJECT_NAME}PublicHeaders
     ${PROJECT_SOURCE_DIR}/include/Envy/opengl/ShaderProgram.h
     ${PROJECT_SOURCE_DIR}/include/Envy/opengl/Texture2D.h
@@ -29,7 +31,10 @@ add_library(L${PROJECT_NAME}
 )
 
 add_dependencies(L${PROJECT_NAME}
-    FMT_EXTERN
+    # fmt::fmt
+    # glm::glm
+    FMT_LIBRARY
+    GLM_LIBRARY
     STB_IMAGE_WRITE
     STB_IMAGE_LOAD
     GLAD
@@ -37,12 +42,14 @@ add_dependencies(L${PROJECT_NAME}
 
 set(ENVY_PUBLIC_INCLUDES
     ${PROJECT_SOURCE_DIR}/include
-    ${ENVY_VENDOR_INCLUDES}
+    # ${GLM_INSTALL_DIR}/install/include
+    # ${FMT_INSTALL_DIR}/install/include
 CACHE PATH "Includes for EnvyEngine")
 
-target_include_directories(L${PROJECT_NAME} PUBLIC
-    ${ENVY_VENDOR_INCLUDES}
-    ${PROJECT_SOURCE_DIR}/include
+target_include_directories(L${PROJECT_NAME}
+    PUBLIC
+        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:include>
 )
 
 target_link_directories(L${PROJECT_NAME} PUBLIC
@@ -53,10 +60,10 @@ target_link_directories(L${PROJECT_NAME} PUBLIC
 )
 
 target_link_libraries(L${PROJECT_NAME} PUBLIC
-    $<IF:$<CONFIG:Debug>, fmtd, fmt>
     STB_IMAGE_WRITE
     STB_IMAGE_LOAD
-    glm
+    GLM_LIBRARY
+    FMT_LIBRARY
     GLAD
     $<IF:$<PLATFORM_ID:Windows>, opengl32 gdi32 user32 kernel32 shell32,  # Windows
                                  GL>                                      # Linux

@@ -1,3 +1,5 @@
+add_subdirectory(vendor)
+
 add_executable(${PROJECT_NAME}
     main.cpp
     Renderer.cpp
@@ -12,23 +14,20 @@ add_executable(${PROJECT_NAME}
 
 add_dependencies(${PROJECT_NAME}
     LEnvyEngine
-    GLFW_EXTERN
+    GLFW_LIBRARY
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE
     ${PROJECT_SOURCE_DIR}/include
-    ${GLFW_INSTALL_DIR}/install/include
 )
 
 target_link_directories(${PROJECT_NAME} PRIVATE
-    $<IF:$<PLATFORM_ID:Windows>, ${GLFW_INSTALL_DIR}/install/lib,
-                                 ${GLFW_INSTALL_DIR}/install/lib64>
     ${CMAKE_BINARY_DIR}/vendor
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
     LEnvyEngine
-    glfw3
+    GLFW_LIBRARY
 )
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE
