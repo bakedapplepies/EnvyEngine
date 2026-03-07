@@ -13,7 +13,8 @@ add_executable(${PROJECT_NAME}
 )
 
 add_dependencies(${PROJECT_NAME}
-    LEnvyEngine
+    # EnvyEngine
+    ENVYENGINE_LIBRARY
     GLFW_LIBRARY
 )
 
@@ -26,7 +27,8 @@ target_link_directories(${PROJECT_NAME} PRIVATE
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
-    LEnvyEngine
+    # EnvyEngine
+    ENVYENGINE_LIBRARY
     GLFW_LIBRARY
 )
 

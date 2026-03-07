@@ -6,7 +6,7 @@ elseif (WIN32)
     set(LIB lib)
 endif ()
 
-# ======================================================================
+# ===================================================================
 FetchContent_Declare(glfw_fetch
     GIT_REPOSITORY https://github.com/glfw/glfw.git
     GIT_TAG dbadda26835ec5089ef922e6c290bcf58cf12056
@@ -23,3 +23,6 @@ target_include_directories(GLFW_LIBRARY INTERFACE
 target_link_libraries(GLFW_LIBRARY INTERFACE
     ${glfw_BINARY_DIR}/src/libglfw3.a
 )
+
+# ===================================================================
+add_library(ENVYENGINE_LIBRARY ALIAS EnvyEngine)

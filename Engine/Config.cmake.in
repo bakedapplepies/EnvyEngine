@@ -1,0 +1,5 @@
+@PACKAGE_INIT@
+
+include("${CMAKE_CURRENT_LIST_DIR}/EnvyEngineTargets.cmake")
+
+chekc_required_components(EnvyEngine)

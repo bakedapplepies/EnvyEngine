@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.26.0)
-project(EnvyClient CXX C)
+project(EnvyEngine CXX C)
 
 option(BUILD_SHARED_LIBS "Build using shared libraries" OFF)
 
